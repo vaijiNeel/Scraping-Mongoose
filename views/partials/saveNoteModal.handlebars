@@ -1,0 +1,16 @@
+<div class="modal-header">
+	<h3>Notes for {{this._id}}</h3>
+	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	<hr>
+</div>
+<div class="modal-body">
+	{{#if objEmpty}}
+		<h2 style="border: 2px solid darkgray">No notes added for this article yet.</h2>
+	{{else}}
+		<input type="text" name="notes">
+	{{/if}}
+</div>
+<div class="modal-footer">
+	<hr>
+    <button type="button" class="btn btn-default saveNote" data-dismiss="modal">Save Note</button>
+</div>
