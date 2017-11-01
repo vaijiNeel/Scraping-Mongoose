@@ -4,18 +4,18 @@ $(document).ready(function() {
 		event.preventDefault();
 		$.get("/", {
 	    }).then(function() {
-	        console.log("home");
+	        console.log("home page");
 	    }).catch(function() {
 	    	console.error("failed somewhere");
 	    });
 	});
 
-	//saved articles button event
+	//nav bar saved articles button event
 	$(".savedArticles").unbind('click').click(function(event) {
 		event.preventDefault();
-		$.get("/api/getSavedArticles", {
+		$.get("/api/getSavedArticles" , {
 	    }).then(function() {
-	        console.log("get saved articles");
+	        console.log("get saved articles complete");
 	    }).catch(function() {
 	    	console.error("failed somewhere");
 	    });
@@ -28,7 +28,9 @@ $(document).ready(function() {
 
 		$.get("/api/scrapeNewArticles", {
 	    }).then(function() {
-	        console.log("save new articles");
+	    	//Show the modal 
+			$("#scrapeCompleteModal").modal("toggle"); 
+	        console.log("save new articles complete");
 	        // Reload the page to get the updated list
 	        document.location.href="/";
 	        // location.reload(true);
@@ -40,7 +42,8 @@ $(document).ready(function() {
 	//save article button event
 	$(".saveArtBtn").unbind('click').click(function(event) {
 		event.preventDefault();
-		$.get("/api/saveArticle", {
+		var thisId = $(this).attr("data-id");
+		$.get("/api/saveArticle" + thisId , {
 	    }).then(function() {
 	        console.log("save article complete");
 	    }).catch(function() {
@@ -51,7 +54,8 @@ $(document).ready(function() {
 	//delete article button event
 	$(".deleteArtBtn").unbind('click').click(function(event) {
 		event.preventDefault();
-		$.get("/api/deleteArticle", {
+		var thisId = $(this).attr("data-id");
+		$.get("/api/deleteArticle" + thisId , {
 	    }).then(function() {
 	        console.log("delete article complete");
 	    }).catch(function() {
@@ -62,7 +66,8 @@ $(document).ready(function() {
 	//add note button event
 	$(".saveNote").unbind('click').click(function(event) {
 		event.preventDefault();
-		$.get("/api/saveNote", {
+		var thisId = $(this).attr("data-id");
+		$.get("/api/saveNote" + thisId , {
 	    }).then(function() {
 	        console.log("save note complete");
 	    }).catch(function() {

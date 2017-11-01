@@ -97,7 +97,7 @@ module.exports = function(app) {
                 flag=false;
               }
               // console.log("obj empty flag in scrape articles:",flag);
-              res.redirect("index", {articleObj: dbArticle, objEmpty: flag}); 
+              res.render("index", {articleObj: dbArticle, objEmpty: flag}); 
               // res.send("Scrape Complete");
             })
             .catch(function(err) {

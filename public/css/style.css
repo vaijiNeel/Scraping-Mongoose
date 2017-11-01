@@ -53,7 +53,7 @@ body {
 
 .container {
 	opacity: 100%;
-	background-color: #efdaea;
+	/*background-color: #efdaea;*/
 	color: black;
 	height: 100%;
 }
