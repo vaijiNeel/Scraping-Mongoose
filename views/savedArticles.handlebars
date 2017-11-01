@@ -8,12 +8,13 @@
 
 				<!-- header -->
 				<div class="row">
-					<div class="col-sm-9 col-md-9 col-lg-9">
+					<div class="col-sm-8 col-md-8 col-lg-8">
 						<a href="{{this.link}}" style="font-size: 20px">{{this.headline}}</a> <br>
 						<p>{{this.byline}}</p>
 					</div>
-					<div class="col-sm-3 col-md-3 col-lg-3 saveBtnCol">
-						<button class="saveArtBtn" data-id={{this._id}} type="button">Save Article</button>
+					<div class="col-sm-4 col-md-4 col-lg-4 saveBtnCol">
+						<button class="addNotesBtn" data-id={{this._id}} type="button">Article Notes</button>
+						<button class="deleteSavedBtn" data-id={{this._id}} type="button">Delete from saved</button>
 					</div>
 				</div>
 				<hr>

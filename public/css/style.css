@@ -40,7 +40,6 @@ body {
 .bckgrd ::after {
   content: "";
   background: url("http://www.niemanlab.org/images/nytimes-print-newspaper-cc-990x500.jpg") no-repeat center center fixed;
-  /*background: url("http://images.wisegeek.com/top-news-newspaper-headline.jpg");*/
   opacity: 0.3;
   background-size: cover;
   top: 0;
@@ -56,6 +55,7 @@ body {
 	/*background-color: #efdaea;*/
 	color: black;
 	height: 100%;
+	padding-bottom: 40% !important;
 }
 
 .articleRows {
@@ -68,6 +68,19 @@ body {
 .saveBtnCol {
 	margin-top: 1%;
 	text-align: center;
+}
+
+.addNotesBtn {
+	margin-right: 1%
+}
+
+img {
+	float: left;
+	margin-bottom: 1%
+}
+
+.sumry {
+	margin-left: 6%;
 }
 
 .cntr {

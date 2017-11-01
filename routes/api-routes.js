@@ -4,20 +4,26 @@ var db = require("../models");
 var axios = require("axios");
 var cheerio = require("cheerio");
 
+var newArticleModalFlag = false;
+
 // Routes
 module.exports = function(app) {
+
   //home page
   app.get("/", function(req, res) {
-    db.Article.find({})
+    db.Article.find({savedArticle: false})
     .then(function(dbArticle) {
-      console.log("inside api call Article",dbArticle);
+      console.log("inside home api-route");
       var flag=false;
       if(dbArticle.length == 0) {
         flag=true;
       } else {
         flag=false;
       }
-      console.log("obj empty flag in home:",flag);
+      console.log("obj empty flag in home api-route:",flag);
+      // if (newArticleModalFlag) {
+
+      // }
       res.render("index", {articleObj: dbArticle, objEmpty: flag}); 
     });
   });
@@ -25,19 +31,18 @@ module.exports = function(app) {
   // get saved articles
   app.get("/api/getSavedArticles", function(req, res) {
     db.Article
-      .find({})
+      .find({savedArticle: true})
       .then(function(dbArticle) {
         // If we were able to successfully find Articles, send them back to the client
-        console.log("inside api call Article",dbArticle);
+        console.log("inside saved Article api-route",dbArticle);
         var flag=false;
         if(dbArticle.length == 0) {
           flag=true;
         } else {
           flag=false;
         }
-      console.log("obj empty flag in saved articles:",flag);
-      res.render("index", {articleObj: dbArticle, objEmpty: flag}); 
-        // res.send(dbArticle);
+        console.log("obj empty flag in saved articles api-route:",flag);
+        res.render("savedArticles", {articleObj: dbArticle, objEmpty: flag}); 
       })
       .catch(function(err) {
         // If an error occurred, send it to the client
@@ -52,7 +57,7 @@ module.exports = function(app) {
     axios.get("https://www.nytimes.com/").then(function(response) {
       // Then, we load that into cheerio and save it to $ for a shorthand selector
       var $ = cheerio.load(response.data);
-
+      newArticleModalFlag = true;
       // Now, we grab every h2, a, img within an article tag, and do the following:
       $(".collection article").each(function(i, element) {
         // Save an empty result object
@@ -88,78 +93,62 @@ module.exports = function(app) {
           db.Article
             .create(result)
             .then(function(dbArticle) {
-              console.log("Scrape Complete");
-              // console.log("inside api call Article",dbArticle);
-              var flag=false;
-              if(dbArticle.length == 0) {
-                flag=true;
-              } else {
-                flag=false;
-              }
-              // console.log("obj empty flag in scrape articles:",flag);
-              res.render("index", {articleObj: dbArticle, objEmpty: flag}); 
-              // res.send("Scrape Complete");
+              console.log("Scrape one article complete");
             })
             .catch(function(err) {
-              // res.status(status).json(err)
               console.log("err in api route scrape articles");
               res.json(err);
             }); //end catch
         } // end if
       }); // end each
+      res.redirect("/"); //render page
     }); // end axios
   }); // end api
 
-  // Route for getting all Articles from the db
-  app.get("/articles", function(req, res) {
-    // Grab every document in the Articles collection
+  //save article
+  app.get("/api/saveArticle/:articleId", function(req, res) {
     db.Article
-      .find({})
-      .then(function(dbArticle) {
-        // If we were able to successfully find Articles, send them back to the client
-        res.json(dbArticle);
-      })
-      .catch(function(err) {
-        // If an error occurred, send it to the client
-        res.json(err);
-      });
+    .findOneAndUpdate({ _id: req.params.articleId }, {savedArticle: true})
+    .then(function(dbArticle) {
+      console.log("Save Complete");
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
+    res.redirect("/"); //render page
   });
 
-  // Route for grabbing a specific Article by id, populate it with it's note
-  app.get("/articles/:id", function(req, res) {
-    // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
+  //delete article from saved
+  app.get("/api/deleteFromSaved/:articleId", function(req, res) {
     db.Article
-      .findOne({ _id: req.params.id })
-      // ..and populate all of the notes associated with it
-      .populate("note")
-      .then(function(dbArticle) {
-        // If we were able to successfully find an Article with the given id, send it back to the client
-        res.json(dbArticle);
-      })
-      .catch(function(err) {
-        // If an error occurred, send it to the client
-        res.json(err);
-      });
+    .findOneAndUpdate({ _id: req.params.articleId }, {savedArticle: false})
+    .then(function(dbArticle) {
+      console.log("unsave Complete");
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
+    res.redirect("/api/getSavedArticles"); //render page
   });
 
-  // Route for saving/updating an Article's associated Note
-  app.post("/articles/:id", function(req, res) {
-    // Create a new note and pass the req.body to the entry
+  //save note
+  app.post("/api/saveNote/:articleId", function(req, res) {
     db.Note
-      .create(req.body)
-      .then(function(dbNote) {
-        // If a Note was created successfully, find one Article with an `_id` equal to `req.params.id`. Update the Article to be associated with the new Note
-        // { new: true } tells the query that we want it to return the updated User -- it returns the original by default
-        // Since our mongoose query returns a promise, we can chain another `.then` which receives the result of the query
-        return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
-      })
-      .then(function(dbArticle) {
-        // If we were able to successfully update an Article, send it back to the client
-        res.json(dbArticle);
-      })
-      .catch(function(err) {
-        // If an error occurred, send it to the client
-        res.json(err);
-      });
+    .create(req.body)
+    .then(function(dbNote) {
+      return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+    })
+    .then(function(dbArticle) {
+      // If we were able to successfully update an Article, send it back to the client
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      // If an error occurred, send it to the client
+      res.json(err);
+    });
+    res.redirect("/api/getSavedArticles"); //render page
   });
+
+  //delete note
+
 }
