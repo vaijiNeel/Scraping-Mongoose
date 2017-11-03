@@ -1,16 +1,21 @@
 <div class="modal-header">
-	<h3>Notes for {{this._id}}</h3>
+	<h2>Note for article: {{existingNoteObj._id}}</h2>
 	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	<hr>
 </div>
 <div class="modal-body">
-	{{#if objEmpty}}
-		<h2 style="border: 2px solid darkgray">No notes added for this article yet.</h2>
-	{{else}}
-		<input type="text" name="notes">
-	{{/if}}
-</div>
-<div class="modal-footer">
-	<hr>
-    <button type="button" class="btn btn-default saveNote" data-dismiss="modal">Save Note</button>
+	<div class="existingNotes">
+		{{#if noNoteObj}}
+			<div class="modalExistingNoteDiv">
+				<p>No notes for this article yet.</p>
+			</div>
+		{{else}}
+			{{#each existingNoteObj}}
+				<div class="modalExistingNoteDiv">
+					<p>{{existingNoteObj._id}}</p>
+					<button type="button" data-id={{this._id}} class="deleteExistingNote btn btn-default"><strong>X</strong>strong></button>
+				</div>
+			{{/each}}
+		{{/if}}
+	</div>
+	<textarea class="inputNote" rows="4" cols="50"></textarea>
 </div>

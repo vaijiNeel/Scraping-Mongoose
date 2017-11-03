@@ -8,15 +8,17 @@
 	
 	<!-- favicon -->
   	<link rel="shortcut icon" type="image/jpeg" href="https://cdn-images-1.medium.com/max/1600/1*Q0v1O4k4G5CC5jdFBrfEQw.jpeg"/>
-  
-	<!-- Link to Bootstrap -->
+  	
+  	<!-- Link to Bootstrap -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 	<!-- Link to css files -->
 	<link rel="stylesheet" type="text/css" href="/css/style.css">	
-	
-	<!-- Link to jquery -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	
 </head>
 <body>
@@ -26,12 +28,12 @@
 	  	<a href="/">
 	  		<button type="button" class="btn homeBtn"><strong>Home</strong></button> 
 	  	</a>
-	  	<a href="/api/getSavedArticles">
+	  	<!-- <a href="/api/getSavedArticles"> -->
 	  		<button type="button" class="btn savedArticles"><strong>Saved Articles</strong></button>
-	  	</a>
-	  	<a href="/api/scrapeNewArticles">
+	  	<!-- </a> -->
+	  	<!-- <a href="/api/scrapeNewArticles"> -->
 	  		<button type="button" class="btn newArticles"><strong>Scrape New Articles</strong></button>
-	  	</a>
+	  	<!-- </a> -->
 	</nav>
 
 	<div class="bckgrd">
@@ -44,7 +46,8 @@
 		{{> footerhbs}}
 	</footer>
 
-	<!-- Modal -->
+	<!-- Modals -->
+	<!-- new article count modal -->
 	<div class="modal" id="scrapeCompleteModal">
 	  	<div class="modal-dialog">
 	    	<div class="modal-content">
@@ -52,23 +55,26 @@
 			    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 			    </div>
 			    <div class="modal-body">
-		    		<!-- {{> scrapeCompleteModal}} -->
-		    		<h2>Test</h2>
+		    		<h2 id="modalScrapeComplt"></h2>
 			    </div>
 			    <div class="modal-footer">
-			        <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+			        <button type="button" class="btn btn-default okButton" data-dismiss="modal">Ok</button>
 			    </div>
 		    </div>
 	  	</div>
 	</div>
-	
+	<!-- save note modal -->
 	<div class="modal" id="addNotesModal">
 	  	<div class="modal-dialog">
 	    	<div class="modal-content">
-			    {{> saveNoteModal}}
+	    		{{> saveNoteModal}}
+			    <div class="modal-footer">
+			        <button type="button" class="btn btn-default saveNoteBtn" data-dismiss="modal">Save Note</button>
+			    </div>
 		    </div>
 	  	</div>
 	</div>
+
 	<!-- client side javascript file -->
 	<script type="text/javascript" src="/js/scrape.js"></script>
 </body>

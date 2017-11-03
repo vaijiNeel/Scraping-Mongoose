@@ -114,3 +114,14 @@ img {
 .ftr {
 	padding: 10px;
 }
+
+/*save note modal*/
+
+.modalExistingNoteDiv {
+	text-align: center;
+	border: 2px solid gray;
+}
+
+.deleteExistingNote {
+	background-color: red;
+}

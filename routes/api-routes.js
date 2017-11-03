@@ -4,8 +4,6 @@ var db = require("../models");
 var axios = require("axios");
 var cheerio = require("cheerio");
 
-var newArticleModalFlag = false;
-
 // Routes
 module.exports = function(app) {
 
@@ -20,10 +18,7 @@ module.exports = function(app) {
       } else {
         flag=false;
       }
-      console.log("obj empty flag in home api-route:",flag);
-      // if (newArticleModalFlag) {
-
-      // }
+      console.log("obj empty flag in home api-route:",flag,"\n");
       res.render("index", {articleObj: dbArticle, objEmpty: flag}); 
     });
   });
@@ -33,7 +28,6 @@ module.exports = function(app) {
     db.Article
       .find({savedArticle: true})
       .then(function(dbArticle) {
-        // If we were able to successfully find Articles, send them back to the client
         console.log("inside saved Article api-route",dbArticle);
         var flag=false;
         if(dbArticle.length == 0) {
@@ -45,23 +39,20 @@ module.exports = function(app) {
         res.render("savedArticles", {articleObj: dbArticle, objEmpty: flag}); 
       })
       .catch(function(err) {
-        // If an error occurred, send it to the client
         res.json(err);
     });
   });
 
   // A GET route for scraping new articles
-  app.get("/api/scrapeNewArticles", function(req, res) {
+  app.post("/api/scrapeNewArticles", function(req, res) {
+    var result=[];
     // First, we grab the body of the html with request
-    //"http://www.echojs.com/"
     axios.get("https://www.nytimes.com/").then(function(response) {
       // Then, we load that into cheerio and save it to $ for a shorthand selector
       var $ = cheerio.load(response.data);
-      newArticleModalFlag = true;
       // Now, we grab every h2, a, img within an article tag, and do the following:
       $(".collection article").each(function(i, element) {
-        // Save an empty result object
-        var result = {};
+        var imageURL;
         var noImageAvail = "https://portal.meril.eu/meril/img/NoImageAvailable.png";
         var headline = $(this).children("h2").children("a").text().trim();
         var link = $(this).children("h2").children("a").attr("href");
@@ -70,38 +61,37 @@ module.exports = function(app) {
         var artImage = $(this).children(".media").children(".image").children("a").children("img").attr("src");
 
         if(headline !== "" && summary !== "" && link !== "") {
-          // Add the text and href of every link, and save them as properties of the result object
-          result.headline = headline;
-          result.link = link;
-          result.byline = byline;
-          result.summary = summary;
           if (typeof artImage === "undefined") {
-            console.log("no image found.");
-            result.imageURL = noImageAvail;
+            // console.log("no image found.");
+            imageURL = noImageAvail;
           } else {
-            console.log("image found.");
-            result.imageURL = artImage;
+            // console.log("image found.");
+            imageURL = artImage;
           }
-
-          console.log("headline:",result.headline);
-          console.log("byline:",result.byline);
-          console.log("summary:",result.summary);
-          console.log("link:",result.link);
-          console.log("image:",result.imageURL,"\n------------------------------------------\n");
-
-          // Create a new Article using the `result` object built from scraping
-          db.Article
-            .create(result)
-            .then(function(dbArticle) {
-              console.log("Scrape one article complete");
-            })
-            .catch(function(err) {
-              console.log("err in api route scrape articles");
-              res.json(err);
-            }); //end catch
+          // Add the text and href of every link, and save them as properties of the result object
+          var temp = {
+            "headline": headline,
+            "link": link,
+            "byline": byline,
+            "summary": summary,
+            "imageURL": imageURL
+          };
+          // console.log("temp:",temp);
+          result.push(temp);
         } // end if
-      }); // end each
-      res.redirect("/"); //render page
+      }); //end each
+      // console.log("result array:",result);
+      db.Article
+      .create(result, function(err, result) {
+        if(err) {
+          console.log("error in create:", err);
+          var len=0;
+          res.json(len);
+        } else {
+          console.log("Scrape article complete length:", result.length);
+          res.json(result.length);
+        }
+      });
     }); // end axios
   }); // end api
 
@@ -131,23 +121,31 @@ module.exports = function(app) {
     res.redirect("/api/getSavedArticles"); //render page
   });
 
-  //save note
-  app.post("/api/saveNote/:articleId", function(req, res) {
-    db.Note
-    .create(req.body)
-    .then(function(dbNote) {
-      return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
-    })
+  //get existing notes
+  app.get("/api/getSavedNotes/:articleId", function(req, res) {
+    db.Article
+    .findOne({_id: req.params.articleId})
+    .populate("note")
     .then(function(dbArticle) {
-      // If we were able to successfully update an Article, send it back to the client
-      res.json(dbArticle);
+      console.log("dbArticle:", dbArticle);
+      var noNote;
+      if(dbArticle.length > 0) {
+        noNote = true;
+        //render modal
+        res.render("partials/saveNoteModal", {existingNoteObj: dbArticle, noNoteObj: noNote}); 
+      } else {
+        noNote = false;
+        res.render("partials/saveNoteModal", {existingNoteObj: dbArticle, noNoteObj: noNote}); 
+      }
     })
     .catch(function(err) {
       // If an error occurred, send it to the client
       res.json(err);
     });
-    res.redirect("/api/getSavedArticles"); //render page
+    // res.redirect("/api/getSavedArticles"); //render page
   });
+
+  //add new note
 
   //delete note
 

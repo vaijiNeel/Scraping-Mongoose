@@ -1,38 +1,43 @@
 $(document).ready(function() {
 
-	// //nav bar saved articles button event
-	// $(".savedArticles").unbind('click').click(function(event) {
-	// 	event.preventDefault();
-	// 	$.get("/api/getSavedArticles" , {
-	//     }).then(function() {
-	//         console.log("get saved articles complete");
-	//     }).catch(function() {
-	//     	console.error("saved articles failed somewhere");
-	//     });
-	// });
+	//nav bar go to saved articles page button event
+	$(".savedArticles").on("click", function(event) {
+		event.preventDefault();
+		$.get("/api/getSavedArticles", {
+	    }).then(function() {
+	        console.log("get saved articles complete");
+	        document.location.href="/api/getSavedArticles";
+		    // location.reload(true);	        
+	    }).catch(function() {
+	    	console.error("saved articles failed somewhere");
+	    });
+	});
 
-	//scrape new articles button event
-	// $(".newArticles").unbind('click').click(function(event) {
-	// // $(".newArticles").on("click", function() {
-	// 	event.preventDefault();
-	// 	$.ajax({
-	// 	    method: "POST",
-	// 	    url: "/api/scrapeNewArticles/" 
-	// 	})
-	// 	.done(function() {
-	//         console.log("save new articles complete");
-	//         // Reload the page to get the updated list
-	//         // document.location.href="/";
-	//         location.reload(true);
-	//         //Show the modal 
-	// 		$("#scrapeCompleteModal").modal("toggle"); 
-	//     }).catch(function() {
-	//     	console.error("new articles failed somewhere");
-	//     });
-	// });
+	//nav bar scrape new articles button event
+	$(".newArticles").on("click", function(event) {
+		event.preventDefault();
+		$.ajax({
+		    method: "POST",
+		    url: "/api/scrapeNewArticles/" 
+		})
+		.done(function(data) {
+	        console.log("save new articles complete");
+	        console.log("new articles in callback function:", data);
+	        //Show the modal 
+	        $("#modalScrapeComplt").text(`Added ${data} new articles.`);
+			$("#scrapeCompleteModal").modal("toggle"); 
+			$(".okButton").on("click", function(event) {
+				event.preventDefault();
+				// Reload the page to get the updated list
+				document.location.href="/";
+			});
+	    }).catch(function() {
+	    	console.error("new articles failed somewhere");
+	    });
+	});
 
-	//save article button event
-	$(".saveArtBtn").unbind('click').click(function(event) {
+	//save article (for each article) button event
+	$(".saveArtBtn").on("click", function(event) {
 		event.preventDefault();
 		var thisId = $(this).attr("data-id");
 		$.ajax({
@@ -48,8 +53,8 @@ $(document).ready(function() {
 	    });
 	});
 
-	// //delete article button event
-	$(".deleteSavedBtn").unbind('click').click(function(event) {
+	// delete article (in save article page for each article) button event
+	$(".deleteSavedBtn").on("click", function(event) {
 		event.preventDefault();
 		var thisId = $(this).attr("data-id");
 		$.ajax({
@@ -65,18 +70,20 @@ $(document).ready(function() {
 	    });
 	});
 
-	//add note button event
-	$(".saveNote").unbind('click').click(function(event) {
+	//add note (in saved article page for each article saved) button event
+	$(".addNotesBtn").on("click", function(event) {
 		event.preventDefault();
 		var thisId = $(this).attr("data-id");
 		$.ajax({
-		    method: "POST",
-		    url: "/api/saveNote" + thisId,
+		    method: "GET",
+		    url: "/api/getSavedNotes/" + thisId,
 		})
 		.done(function() {
-			console.log("save note complete");
-		    // document.location.href="/api/getSavedArticles";
-		    location.reload(true);
+			console.log("get saved note complete");
+			$("#addNotesModal").modal("toggle"); 
+			//click save
+			// $("")
+			//click delete
 	    })
 	 	.catch(function() {
 	    	console.error("failed somewhere");

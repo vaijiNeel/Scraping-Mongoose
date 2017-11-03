@@ -1,5 +1,5 @@
 {{#if objEmpty}}
-	<h2 class="cntr">Scrape New York Times <br> </h2>
+	<h2 class="cntr">Please save some articles first to view here.</h2><br>
 {{else}}
 	{{#each articleObj}}
 
@@ -9,7 +9,7 @@
 				<!-- header -->
 				<div class="row">
 					<div class="col-sm-8 col-md-8 col-lg-8">
-						<a href="{{this.link}}" style="font-size: 20px">{{this.headline}}</a> <br>
+						<a href="{{this.link}}" style="font-size: 20px" target="_blank">{{this.headline}}</a> <br>
 						<p>{{this.byline}}</p>
 					</div>
 					<div class="col-sm-4 col-md-4 col-lg-4 saveBtnCol">
