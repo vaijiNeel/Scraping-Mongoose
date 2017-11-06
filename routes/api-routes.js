@@ -28,7 +28,7 @@ module.exports = function(app) {
     db.Article
       .find({savedArticle: true})
       .then(function(dbArticle) {
-        console.log("inside saved Article api-route",dbArticle);
+        // console.log("inside saved Article api-route",dbArticle);
         var flag=false;
         if(dbArticle.length == 0) {
           flag=true;
@@ -127,7 +127,7 @@ module.exports = function(app) {
     .findOne({_id: req.params.articleId})
     .populate("note")
     .then(function(dbArticle) {
-      console.log("dbArticle:", dbArticle);
+      console.log("inside get saved notes - dbArticle, populate note:", dbArticle);
       var noNote;
       if(dbArticle.length > 0) {
         noNote = true;
@@ -145,7 +145,24 @@ module.exports = function(app) {
     // res.redirect("/api/getSavedArticles"); //render page
   });
 
-  //add new note
+//add new note
+app.post("/api/addNote/:id", function(req, res) {
+  // Create a new note and pass the req.body to the entry
+  db.Note
+    .create(req.body)
+    .then(function(dbNote) {
+      return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+    })
+    .then(function(dbArticle) {
+      console.log(dbArticle);
+      // If we were able to successfully update an Article, send it back to the client
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      // If an error occurred, send it to the client
+      res.json(err);
+    });
+});
 
   //delete note
 

@@ -81,9 +81,22 @@ $(document).ready(function() {
 		.done(function() {
 			console.log("get saved note complete");
 			$("#addNotesModal").modal("toggle"); 
-			//click save
-			// $("")
-			//click delete
+
+			//click save note
+			$(".saveNoteBtn").on("click", function(event) {
+				$.ajax({
+				    method: "GET",
+				    url: "/api/addNote/" + thisId,
+				})
+				.done(function() {
+					console.log("add new note complete");
+				})
+			});
+
+			//click delete note
+			$(".deleteExistingNote").on("click", function(event) {
+				
+			});
 	    })
 	 	.catch(function() {
 	    	console.error("failed somewhere");
